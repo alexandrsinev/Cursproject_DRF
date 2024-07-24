@@ -44,7 +44,7 @@ class CombinationValidator:
 
     def __call__(self, habit):
         if (habit.get(self.associated_habit)
-                and not habit.get(self.pleasant_habit)):
+                and habit.get(self.pleasant_habit)):
             raise ValidationError(
                 "В связанные привычки могут попадать только "
                 "привычки с признаком приятной привычки."
