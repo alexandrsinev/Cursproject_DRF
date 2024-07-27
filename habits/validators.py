@@ -2,6 +2,8 @@ from datetime import timedelta
 
 from rest_framework.exceptions import ValidationError
 
+from habits.models import Habits
+
 
 class EliminationChoiceValidator:
     """Валидатор, исключающий выбор связанной привычки
@@ -43,12 +45,13 @@ class CombinationValidator:
         self.pleasant_habit = pleasant_habit
 
     def __call__(self, habit):
-        if (habit.get(self.associated_habit)
-                and habit.get(self.pleasant_habit)):
-            raise ValidationError(
-                "В связанные привычки могут попадать только "
-                "привычки с признаком приятной привычки."
-            )
+        a_habit = habit.get('associated_habit')
+        if a_habit:
+            if self.associated_habit and not a_habit.pleasant_habit:
+                raise ValidationError(
+                    "В связанные привычки могут попадать только "
+                    "привычки с признаком приятной привычки."
+                )
 
 
 class PeriodicityValidator:
@@ -73,7 +76,7 @@ class AbsenceValidator:
 
     def __call__(self, habit):
         if habit.get(self.pleasant_habit) and (
-            habit.get(self.reward) or habit.get(self.associated_habit)
+                habit.get(self.reward) or habit.get(self.associated_habit)
         ):
             raise ValidationError(
                 "Приятная привычка не может иметь вознаграждение "
